@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumo Interativo de Didática</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video autoplay loop muted playsinline id="video-fundo">
+        <source src="fundo-espaco.mp4" type="video/mp4">
+    </video>
+
+    <main class="app-shell">
+        <section id="tela-inicial" class="tela tela-inicial">
+            <div class="intro-hero">
+                <div class="intro-copy">
+                    <span class="tag-topo">Projeto acadêmico interativo</span>
+                    <h1>Didática em <span class="titulo-destaque">construção</span></h1>
+                    <p class="texto-base texto-intro">
+                        Um portfólio visual para transformar ideias da Didática em percursos de
+                        leitura, imagem interativa e, em breve, podcast.
+                    </p>
+
+                    <div class="intro-acoes">
+                        <button type="button" class="btn-destaque" onclick="irParaAulas()">
+                            Explorar aulas
+                        </button>
+                        <button
+                            id="btn-entender-projeto"
+                            type="button"
+                            class="btn-secundario btn-outline"
+                            onclick="mostrarGuiaInicial()"
+                            aria-controls="guia-inicial"
+                            aria-expanded="false"
+                        >
+                            Entender o projeto
+                        </button>
+                    </div>
+                    <p class="cta-microcopy">Comece por uma aula pronta; os detalhes aparecem quando você quiser explorar.</p>
+
+                    <div class="intro-trilha">
+                        <span><strong>01</strong> Imagem interativa</span>
+                        <span><strong>02</strong> Reflexão didática</span>
+                        <span><strong>03</strong> Podcast em breve</span>
+                    </div>
+
+                    <div class="pergunta-guia-card">
+                        <span>Pergunta-guia</span>
+                        <strong>Como ensinar também constrói formas de ver o mundo?</strong>
+                    </div>
+                </div>
+
+                <div class="intro-side">
+                    <aside class="intro-card intro-card-enxuto">
+                        <div class="livro-cena" aria-hidden="true">
+                            <span class="livro-brilho"></span>
+                            <div class="livro-base">
+                                <span class="capa capa-esquerda"></span>
+                                <span class="capa capa-direita"></span>
+                                <span class="pagina pagina-1"></span>
+                                <span class="pagina pagina-2"></span>
+                                <span class="pagina pagina-3"></span>
+                                <span class="pagina pagina-4"></span>
+                                <span class="pagina pagina-5"></span>
+                                <span class="miolo-livro"></span>
+                            </div>
+                            <span class="letra-3d letra-1">D</span>
+                            <span class="letra-3d letra-2">?</span>
+                            <span class="letra-3d letra-3">A</span>
+                            <span class="letra-3d letra-4">+</span>
+                        </div>
+                        <span class="tag-topo tag-prototipo">Proposta atual</span>
+                        <h2>Uma entrada simples para explorar o projeto</h2>
+                        <p class="texto-base">
+                            A primeira aula concentra a matéria sobre Inteligência Artificial,
+                            imagem interativa e o futuro podcast do grupo em um só percurso.
+                        </p>
+
+                        <div class="aula-status-grid" aria-label="Estado do projeto">
+                            <span class="aula-status aula-status-ok">
+                                <strong>Aula 1</strong>
+                                <small>em produção</small>
+                            </span>
+                            <span class="aula-status aula-status-destaque">
+                                <strong>Podcast</strong>
+                                <small>espaço pronto</small>
+                            </span>
+                            <span class="aula-status aula-status-destaque">
+                                <strong>Novas aulas</strong>
+                                <small>botão +</small>
+                            </span>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <div id="guia-inicial" class="intro-detalhes" hidden>
+                <div class="intro-detalhes-cabecalho">
+                    <span class="tag-topo tag-prototipo">Como funciona</span>
+                    <h2>O projeto em três movimentos</h2>
+                    <p class="texto-base">
+                        Primeiro o visitante escolhe uma aula, depois explora a imagem interativa e,
+                        se quiser aprofundar, abre a leitura completa ou o futuro áudio do grupo.
+                    </p>
+                </div>
+
+                <div class="intro-guia">
+                    <article class="guia-card">
+                        <span class="guia-numero">01</span>
+                        <span class="guia-icone" aria-hidden="true">◌</span>
+                        <h3>Imagem que guia o tema</h3>
+                        <p class="texto-base">
+                            A imagem funciona como mapa inicial: apresenta o assunto antes mesmo da
+                            leitura começar.
+                        </p>
+                    </article>
+
+                    <article class="guia-card">
+                        <span class="guia-numero">02</span>
+                        <span class="guia-icone" aria-hidden="true">+</span>
+                        <h3>Pontos que explicam detalhes</h3>
+                        <p class="texto-base">
+                            Os símbolos de <strong>+</strong> mostram pistas rápidas e conduzem a uma
+                            explicação mais completa.
+                        </p>
+                    </article>
+
+                    <article class="guia-card">
+                        <span class="guia-numero">03</span>
+                        <span class="guia-icone" aria-hidden="true">♪</span>
+                        <h3>Podcast como voz do grupo</h3>
+                        <p class="texto-base">
+                            O áudio pode trazer a conversa do grupo, com impressões pessoais e
+                            conexões com a formação docente.
+                        </p>
+                    </article>
+                </div>
+
+                <section class="podcast-preview" aria-labelledby="podcast-preview-title">
+                    <div class="podcast-copy">
+                        <span class="tag-topo tag-prototipo">Espaço futuro</span>
+                        <h2 id="podcast-preview-title">Podcast do portfólio</h2>
+                        <p class="texto-base">
+                            Quando o áudio estiver pronto, ele entra aqui como uma extensão da leitura:
+                            menos formal, mais próxima da fala do grupo.
+                        </p>
+                        <div class="podcast-capitulos" aria-label="Possíveis blocos do episódio">
+                            <span>Introdução</span>
+                            <span>Conceitos principais</span>
+                            <span>Relação com a prática</span>
+                            <span>Reflexão final</span>
+                        </div>
+                    </div>
+
+                    <div class="podcast-player-card" aria-label="Prévia visual do player de áudio">
+                        <button type="button" class="podcast-play" disabled aria-label="Áudio ainda em preparação">
+                            ▶
+                        </button>
+                        <div class="podcast-player-copy">
+                            <strong>Episódio em construção</strong>
+                            <span>O arquivo de áudio entra aqui quando o grupo finalizar a gravação.</span>
+                        </div>
+                        <div class="podcast-wave" aria-hidden="true">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </section>
+
+        <section id="tela-aulas" class="tela" hidden>
+            <span class="tag-topo">Organizador do portfólio</span>
+            <h2>Escolha a aula do projeto</h2>
+            <p class="texto-base">
+                A Aula 1 já reúne a imagem interativa e a matéria principal do portfólio.
+                Se depois você quiser ampliar o trabalho, é só adicionar outro espaço.
+            </p>
+            <p class="texto-base texto-prototipo-menu">
+                Quando o podcast estiver pronto, ele pode entrar como complemento dessa mesma aula,
+                mantendo a leitura, a imagem e o áudio conectados.
+            </p>
+
+            <div class="aulas-builder">
+                <div id="lista-aulas" class="lista-aulas lista-aulas-rascunho" aria-live="polite"></div>
+                <button
+                    id="btn-adicionar-aula"
+                    type="button"
+                    class="btn-adicionar-aula"
+                    onclick="adicionarAulaRascunho()"
+                    aria-label="Adicionar nova aula"
+                >
+                    <span class="sinal-adicionar">+</span>
+                    <span>Adicionar aula</span>
+                </button>
+            </div>
+
+            <button type="button" class="btn-secundario" onclick="voltarInicio()">Voltar</button>
+        </section>
+
+        <section id="tela-reflexao" class="tela" hidden>
+            <span class="tag-topo">Pergunta disparadora</span>
+            <div class="typing-wrapper">
+                <h2 id="texto-reflexao" aria-live="polite"></h2>
+            </div>
+            <div id="container-btn-prosseguir" class="acoes-reflexao">
+                <button type="button" class="btn-destaque" onclick="mostrarConteudoAula()">
+                    Refletir e prosseguir
+                </button>
+            </div>
+        </section>
+
+        <section id="tela-conteudo" class="tela tela-conteudo" hidden>
+            <div class="cabecalho-conteudo">
+                <div>
+                    <span class="tag-topo" id="tag-aula-atual">Aula</span>
+                    <h2 id="titulo-aula">Conteúdo</h2>
+                    <p id="resumo-aula" class="texto-base"></p>
+                </div>
+                <button type="button" class="btn-secundario" onclick="voltarParaMenu()">
+                    Voltar para aulas
+                </button>
+            </div>
+
+            <div class="conteudo-grid">
+                <div class="area-imagem">
+                    <div id="container-dinamico" class="container-interativo">
+                        <img src="" id="img-aula" alt="Imagem da aula selecionada">
+                    </div>
+                </div>
+
+                <aside class="painel-lateral">
+                    <h3 id="titulo-painel">Visão geral da aula</h3>
+                    <p id="descricao-painel"></p>
+
+                    <div class="painel-acoes">
+                        <button type="button" class="btn-destaque" onclick="abrirDossieCompleto()">
+                            Saber mais
+                        </button>
+                        <button id="btn-videos-aula" type="button" class="btn-secundario" onclick="abrirVideosAula()" hidden>
+                            Ver vídeos da aula
+                        </button>
+                    </div>
+
+                    <p class="texto-ajuda">
+                        Passe o mouse sobre os símbolos de <strong>+</strong> para ver um resumo
+                        rápido. Clique em qualquer ponto interativo ou no botão "Saber mais" para
+                        abrir a leitura completa da aula.
+                    </p>
+                </aside>
+            </div>
+        </section>
+
+        <section id="tela-dossie" class="tela tela-dossie" hidden>
+            <div class="dossie-topbar">
+                <button type="button" class="btn-secundario" onclick="voltarDoDossie()">
+                    Voltar para a aula
+                </button>
+                <span class="tag-topo" id="dossie-tag">Dossiê</span>
+            </div>
+
+            <div class="dossie-hero">
+                <div class="dossie-hero-copy">
+                    <span id="dossie-kicker" class="dossie-kicker">Leitura em formato de matéria</span>
+                    <h1 id="dossie-titulo">Título da matéria</h1>
+                    <p id="dossie-resumo" class="texto-base dossie-resumo-principal"></p>
+                    <div id="dossie-meta" class="dossie-meta"></div>
+                </div>
+
+                <aside class="dossie-hero-side">
+                    <div class="dossie-capa-frame">
+                        <img id="dossie-capa" src="" alt="Imagem da aula em destaque">
+                    </div>
+
+                    <div class="dossie-side-copy">
+                        <span class="tag-topo">Recorte da aula</span>
+                        <p id="dossie-destaque" class="dossie-destaque"></p>
+                        <p id="dossie-contexto" class="texto-base"></p>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="dossie-layout">
+                <article id="dossie-artigo" class="dossie-artigo"></article>
+
+                <aside class="dossie-sidebar">
+                    <div class="dossie-sidebar-card">
+                        <h3>Nesta leitura</h3>
+                        <p class="texto-base">
+                            Use estes atalhos para navegar pela matéria e revisar cada parte da aula.
+                        </p>
+                        <div id="dossie-topicos" class="dossie-topicos"></div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <div id="tooltip-card" class="tooltip-card" hidden>
+        <span class="tooltip-tag" id="tooltip-tag">Ponto de estudo</span>
+        <h3 id="tooltip-titulo">Título</h3>
+        <p id="tooltip-texto"></p>
+        <button id="tooltip-botao" type="button" class="btn-tooltip">Saber mais</button>
+    </div>
+
+    <script src="aula1-conteudo.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
