@@ -908,12 +908,13 @@ function criarBlocoComentarios() {
         "Deixe uma mensagem rápida sobre o que você achou da aula, da imagem interativa ou do debate sobre Inteligência Artificial na educação.";
     bloco.appendChild(descricao);
 
-    const aviso = document.createElement("p");
-    aviso.className = "comentarios-aviso";
-    aviso.textContent = COMENTARIOS_ENDPOINT
-        ? "Os comentários enviados aqui ficam registrados no mural do projeto."
-        : "Modo de teste local: por enquanto, os comentários ficam salvos apenas neste aparelho. Depois podemos ligar este mural a uma planilha online.";
-    bloco.appendChild(aviso);
+    if (!COMENTARIOS_ENDPOINT) {
+        const aviso = document.createElement("p");
+        aviso.className = "comentarios-aviso";
+        aviso.textContent =
+            "Mural em preparação: nesta versão, os comentários ainda ficam visíveis apenas neste aparelho. Para aparecer para toda a turma, precisamos conectar a planilha online.";
+        bloco.appendChild(aviso);
+    }
 
     const formulario = document.createElement("form");
     formulario.className = "comentarios-form";
@@ -1059,6 +1060,14 @@ function renderizarComentarios(lista, comentarios) {
             const item = document.createElement("article");
             item.className = "comentario-item";
 
+            const avatar = document.createElement("div");
+            avatar.className = "comentario-avatar";
+            avatar.setAttribute("aria-hidden", "true");
+            item.appendChild(avatar);
+
+            const conteudo = document.createElement("div");
+            conteudo.className = "comentario-conteudo";
+
             const cabecalho = document.createElement("div");
             cabecalho.className = "comentario-cabecalho";
 
@@ -1073,8 +1082,9 @@ function renderizarComentarios(lista, comentarios) {
             const texto = document.createElement("p");
             texto.textContent = comentario.mensagem || "";
 
-            item.appendChild(cabecalho);
-            item.appendChild(texto);
+            conteudo.appendChild(cabecalho);
+            conteudo.appendChild(texto);
+            item.appendChild(conteudo);
             lista.appendChild(item);
         });
 }
