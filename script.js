@@ -14,6 +14,7 @@ const refs = {
     textoReflexao: document.getElementById("texto-reflexao"),
     containerBotao: document.getElementById("container-btn-prosseguir"),
     containerDinamico: document.getElementById("container-dinamico"),
+    listaPontosMobile: document.getElementById("lista-pontos-mobile"),
     imagemAula: document.getElementById("img-aula"),
     tagAulaAtual: document.getElementById("tag-aula-atual"),
     tituloAula: document.getElementById("titulo-aula"),
@@ -21,11 +22,19 @@ const refs = {
     tituloPainel: document.getElementById("titulo-painel"),
     descricaoPainel: document.getElementById("descricao-painel"),
     botaoVideosAula: document.getElementById("btn-videos-aula"),
+    textoAjudaInteracao: document.getElementById("texto-ajuda-interacao"),
     tooltipCard: document.getElementById("tooltip-card"),
     tooltipTag: document.getElementById("tooltip-tag"),
     tooltipTitulo: document.getElementById("tooltip-titulo"),
     tooltipTexto: document.getElementById("tooltip-texto"),
     tooltipBotao: document.getElementById("tooltip-botao"),
+    mobileSheetOverlay: document.getElementById("mobile-sheet-overlay"),
+    mobilePointSheet: document.getElementById("mobile-point-sheet"),
+    mobileSheetFechar: document.getElementById("mobile-sheet-fechar"),
+    mobileSheetTag: document.getElementById("mobile-sheet-tag"),
+    mobileSheetTitulo: document.getElementById("mobile-sheet-titulo"),
+    mobileSheetTexto: document.getElementById("mobile-sheet-texto"),
+    mobileSheetBotao: document.getElementById("mobile-sheet-botao"),
     dossieKicker: document.getElementById("dossie-kicker"),
     dossieTag: document.getElementById("dossie-tag"),
     dossieTitulo: document.getElementById("dossie-titulo"),
@@ -47,6 +56,10 @@ const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
     : [];
 
 inicializarModoPodcastRascunho();
+
+function usaInterfaceToque() {
+    return window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+}
 
 function inicializarModoPodcastRascunho() {
     const totalSalvo = Number(window.localStorage.getItem(CHAVE_TOTAL_AULAS_RASCUNHO));
@@ -420,6 +433,7 @@ function voltarInicio() {
 function voltarParaMenu() {
     interromperDigitacao();
     esconderTooltip();
+    fecharResumoMobile();
     limparDestaqueDossie();
     mostrarTela("aulas");
 }
@@ -471,6 +485,9 @@ function mostrarConteudoAula() {
     refs.imagemAula.src = aula.imagem;
     refs.imagemAula.alt = `Resumo visual da ${aula.titulo}`;
     refs.botaoVideosAula.hidden = videosAula.length === 0;
+    refs.textoAjudaInteracao.innerHTML = usaInterfaceToque()
+        ? 'Toque nos símbolos de <strong>+</strong> ou use a lista "Pontos da imagem" para abrir um resumo. Depois toque em "Saber mais" para ir direto ao trecho da matéria.'
+        : 'Passe o mouse sobre os símbolos de <strong>+</strong> para ver um resumo rápido. Clique em qualquer ponto interativo ou no botão "Saber mais" para abrir a leitura completa da aula.';
 
     if (videosAula.length > 0) {
         refs.botaoVideosAula.textContent = `Ver vídeos da ${aula.titulo}`;
@@ -479,6 +496,8 @@ function mostrarConteudoAula() {
     refs.containerDinamico
         .querySelectorAll(".ponto-interativo")
         .forEach((ponto) => ponto.remove());
+
+    renderizarListaPontosMobile(aula);
 
     aula.pontos.forEach((ponto) => {
         const botaoPonto = document.createElement("button");
@@ -494,16 +513,77 @@ function mostrarConteudoAula() {
         );
         botaoPonto.innerHTML = '<span>+</span><span class="label-hover">Saber mais</span>';
 
-        botaoPonto.addEventListener("mouseenter", () => mostrarTooltip(ponto, botaoPonto));
-        botaoPonto.addEventListener("focus", () => mostrarTooltip(ponto, botaoPonto));
+        botaoPonto.addEventListener("mouseenter", () => {
+            if (!usaInterfaceToque()) {
+                mostrarTooltip(ponto, botaoPonto);
+            }
+        });
+        botaoPonto.addEventListener("focus", () => {
+            if (!usaInterfaceToque()) {
+                mostrarTooltip(ponto, botaoPonto);
+            }
+        });
         botaoPonto.addEventListener("mouseleave", agendarEsconderTooltip);
         botaoPonto.addEventListener("blur", agendarEsconderTooltip);
-        botaoPonto.addEventListener("click", () => abrirDetalhePonto(ponto.id));
+        botaoPonto.addEventListener("click", (event) => {
+            if (usaInterfaceToque()) {
+                event.preventDefault();
+                abrirResumoMobile(ponto);
+                return;
+            }
+
+            abrirDetalhePonto(ponto.id);
+        });
 
         refs.containerDinamico.appendChild(botaoPonto);
     });
 
     mostrarTela("conteudo");
+}
+
+function renderizarListaPontosMobile(aula) {
+    if (!refs.listaPontosMobile) {
+        return;
+    }
+
+    refs.listaPontosMobile.innerHTML = "";
+
+    if (!aula.pontos || aula.pontos.length === 0) {
+        refs.listaPontosMobile.hidden = true;
+        return;
+    }
+
+    refs.listaPontosMobile.hidden = false;
+
+    const cabecalho = document.createElement("div");
+    cabecalho.className = "lista-pontos-mobile-cabecalho";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = "Pontos da imagem";
+    cabecalho.appendChild(titulo);
+
+    const ajuda = document.createElement("p");
+    ajuda.textContent =
+        "No celular, toque em um ponto abaixo ou no símbolo + da imagem para abrir o resumo.";
+    cabecalho.appendChild(ajuda);
+
+    const grid = document.createElement("div");
+    grid.className = "lista-pontos-mobile-grid";
+
+    aula.pontos.forEach((ponto) => {
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "mobile-ponto-card";
+        botao.innerHTML = `
+            <span>${ponto.numero}</span>
+            <strong>${ponto.titulo}</strong>
+        `;
+        botao.addEventListener("click", () => abrirResumoMobile(ponto));
+        grid.appendChild(botao);
+    });
+
+    refs.listaPontosMobile.appendChild(cabecalho);
+    refs.listaPontosMobile.appendChild(grid);
 }
 
 function abrirVideosAula() {
@@ -576,6 +656,38 @@ function esconderTooltip() {
     refs.tooltipCard.hidden = true;
 }
 
+function abrirResumoMobile(ponto) {
+    if (!refs.mobilePointSheet) {
+        abrirDetalhePonto(ponto.id);
+        return;
+    }
+
+    esconderTooltip();
+    refs.mobileSheetTag.textContent = ponto.numero
+        ? `${dadosAulas[aulaSelecionada].titulo} - Ponto ${ponto.numero}`
+        : dadosAulas[aulaSelecionada].titulo;
+    refs.mobileSheetTitulo.textContent = ponto.titulo;
+    refs.mobileSheetTexto.textContent = ponto.info;
+    refs.mobileSheetBotao.onclick = () => {
+        fecharResumoMobile();
+        abrirDetalhePonto(ponto.id);
+    };
+
+    refs.mobileSheetOverlay.hidden = false;
+    refs.mobilePointSheet.hidden = false;
+    document.body.classList.add("mobile-sheet-aberto");
+}
+
+function fecharResumoMobile() {
+    if (!refs.mobilePointSheet) {
+        return;
+    }
+
+    refs.mobileSheetOverlay.hidden = true;
+    refs.mobilePointSheet.hidden = true;
+    document.body.classList.remove("mobile-sheet-aberto");
+}
+
 function abrirDetalhePonto(idSecao) {
     abrirDossieCompleto(idSecao);
 }
@@ -610,6 +722,7 @@ function abrirDossieCompleto(secaoInicialId = null) {
 
     refs.dossieArtigo.innerHTML = "";
     refs.dossieTopicos.innerHTML = "";
+    fecharResumoMobile();
 
     const tituloPanorama = aula.dossie.introducaoTitulo || "Panorama da aula";
 
@@ -1059,6 +1172,7 @@ refs.tooltipCard.addEventListener("mouseleave", agendarEsconderTooltip);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
         esconderTooltip();
+        fecharResumoMobile();
 
         if (!telas.dossie.hidden) {
             voltarDoDossie();
@@ -1067,6 +1181,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("resize", esconderTooltip);
+refs.mobileSheetOverlay?.addEventListener("click", fecharResumoMobile);
+refs.mobileSheetFechar?.addEventListener("click", fecharResumoMobile);
 
 window.addEventListener(
     "scroll",

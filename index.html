@@ -235,6 +235,7 @@
                     <div id="container-dinamico" class="container-interativo">
                         <img src="" id="img-aula" alt="Imagem da aula selecionada">
                     </div>
+                    <div id="lista-pontos-mobile" class="lista-pontos-mobile" aria-label="Pontos da imagem"></div>
                 </div>
 
                 <aside class="painel-lateral">
@@ -250,7 +251,7 @@
                         </button>
                     </div>
 
-                    <p class="texto-ajuda">
+                    <p id="texto-ajuda-interacao" class="texto-ajuda">
                         Passe o mouse sobre os símbolos de <strong>+</strong> para ver um resumo
                         rápido. Clique em qualquer ponto interativo ou no botão "Saber mais" para
                         abrir a leitura completa da aula.
@@ -310,6 +311,22 @@
         <p id="tooltip-texto"></p>
         <button id="tooltip-botao" type="button" class="btn-tooltip">Saber mais</button>
     </div>
+
+    <div id="mobile-sheet-overlay" class="mobile-sheet-overlay" hidden></div>
+    <aside
+        id="mobile-point-sheet"
+        class="mobile-point-sheet"
+        hidden
+        aria-labelledby="mobile-sheet-titulo"
+    >
+        <button id="mobile-sheet-fechar" type="button" class="mobile-sheet-fechar" aria-label="Fechar resumo">
+            ×
+        </button>
+        <span id="mobile-sheet-tag" class="tooltip-tag">Ponto da imagem</span>
+        <h3 id="mobile-sheet-titulo">Título</h3>
+        <p id="mobile-sheet-texto"></p>
+        <button id="mobile-sheet-botao" type="button" class="btn-destaque">Saber mais</button>
+    </aside>
 
     <script src="aula1-conteudo.js"></script>
     <script src="script.js"></script>
