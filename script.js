@@ -51,6 +51,8 @@ let digitacaoTimeout = null;
 let digitacaoExecucaoId = 0;
 let destaqueDossieTimeout = null;
 const CHAVE_TOTAL_AULAS_RASCUNHO = "didatica-total-aulas-podcast-ia";
+const CHAVE_COMENTARIOS_LOCAL = "didatica-comentarios-local";
+const COMENTARIOS_ENDPOINT = window.DIDATICA_COMENTARIOS_ENDPOINT || "";
 const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
     ? window.CONTEUDO_AULA_1
     : [];
@@ -793,6 +795,9 @@ function abrirDossieCompleto(secaoInicialId = null) {
         );
     });
 
+    refs.dossieArtigo.appendChild(criarBlocoComentarios());
+    refs.dossieTopicos.appendChild(criarTopicoDossie("Comentários da turma", "materia-comentarios"));
+
     esconderTooltip();
     limparDestaqueDossie();
     mostrarTela("dossie");
@@ -882,6 +887,260 @@ function criarBlocoMateria({
     });
 
     return bloco;
+}
+
+function criarBlocoComentarios() {
+    const bloco = document.createElement("section");
+    bloco.className = "materia-bloco materia-comentarios";
+    bloco.id = "materia-comentarios";
+
+    const selo = document.createElement("span");
+    selo.className = "materia-indice";
+    selo.textContent = "Participação";
+    bloco.appendChild(selo);
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = "Comentários da turma";
+    bloco.appendChild(titulo);
+
+    const descricao = document.createElement("p");
+    descricao.textContent =
+        "Deixe uma mensagem rápida sobre o que você achou da aula, da imagem interativa ou do debate sobre Inteligência Artificial na educação.";
+    bloco.appendChild(descricao);
+
+    const aviso = document.createElement("p");
+    aviso.className = "comentarios-aviso";
+    aviso.textContent = COMENTARIOS_ENDPOINT
+        ? "Os comentários enviados aqui ficam registrados no mural do projeto."
+        : "Modo de teste local: por enquanto, os comentários ficam salvos apenas neste aparelho. Depois podemos ligar este mural a uma planilha online.";
+    bloco.appendChild(aviso);
+
+    const formulario = document.createElement("form");
+    formulario.className = "comentarios-form";
+    formulario.innerHTML = `
+        <label>
+            <span>Seu nome</span>
+            <input name="nome" type="text" maxlength="40" autocomplete="name" placeholder="Ex.: Ana" required>
+        </label>
+        <label>
+            <span>Mensagem</span>
+            <textarea name="mensagem" maxlength="420" rows="4" placeholder="Escreva o que você achou..." required></textarea>
+        </label>
+        <button type="submit" class="btn-destaque">Enviar comentário</button>
+    `;
+    bloco.appendChild(formulario);
+
+    const status = document.createElement("p");
+    status.className = "comentarios-status";
+    status.setAttribute("aria-live", "polite");
+    bloco.appendChild(status);
+
+    const lista = document.createElement("div");
+    lista.className = "comentarios-lista";
+    bloco.appendChild(lista);
+
+    formulario.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const dados = new FormData(formulario);
+        const nome = normalizarCampoComentario(dados.get("nome"), 40);
+        const mensagem = normalizarCampoComentario(dados.get("mensagem"), 420);
+
+        if (!nome || !mensagem) {
+            status.textContent = "Preencha seu nome e a mensagem antes de enviar.";
+            return;
+        }
+
+        const botao = formulario.querySelector("button");
+        botao.disabled = true;
+        status.textContent = "Enviando comentário...";
+
+        try {
+            await salvarComentario({ nome, mensagem });
+            formulario.reset();
+            status.textContent = "Comentário enviado. Obrigado por participar!";
+            await carregarComentarios(lista, status);
+        } catch (erro) {
+            console.error(erro);
+            status.textContent =
+                "Não consegui enviar agora. Tente novamente em instantes.";
+        } finally {
+            botao.disabled = false;
+        }
+    });
+
+    carregarComentarios(lista, status);
+    return bloco;
+}
+
+function normalizarCampoComentario(valor, limite) {
+    return String(valor || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, limite);
+}
+
+function chaveComentariosAula() {
+    return `${CHAVE_COMENTARIOS_LOCAL}-aula-${aulaSelecionada || 1}`;
+}
+
+function lerComentariosLocais() {
+    try {
+        return JSON.parse(window.localStorage.getItem(chaveComentariosAula()) || "[]");
+    } catch {
+        return [];
+    }
+}
+
+function salvarComentariosLocais(comentarios) {
+    window.localStorage.setItem(
+        chaveComentariosAula(),
+        JSON.stringify(comentarios.slice(-40))
+    );
+}
+
+async function salvarComentario({ nome, mensagem }) {
+    if (COMENTARIOS_ENDPOINT) {
+        return requisitarComentariosJsonp({
+            action: "add",
+            aula: String(aulaSelecionada || 1),
+            nome,
+            mensagem
+        });
+    }
+
+    const comentario = {
+        nome,
+        mensagem,
+        data: new Date().toISOString()
+    };
+    const comentarios = lerComentariosLocais();
+    comentarios.push(comentario);
+    salvarComentariosLocais(comentarios);
+    return comentario;
+}
+
+async function carregarComentarios(lista, status) {
+    try {
+        const comentarios = COMENTARIOS_ENDPOINT
+            ? (await requisitarComentariosJsonp({
+                  action: "list",
+                  aula: String(aulaSelecionada || 1)
+              })).comentarios || []
+            : lerComentariosLocais();
+
+        renderizarComentarios(lista, comentarios);
+
+        if (!comentarios.length) {
+            status.textContent = status.textContent || "Seja a primeira pessoa a comentar.";
+        }
+    } catch (erro) {
+        console.error(erro);
+        renderizarComentarios(lista, lerComentariosLocais());
+        status.textContent =
+            "Não consegui carregar o mural online agora. Mostrando apenas comentários deste aparelho.";
+    }
+}
+
+function renderizarComentarios(lista, comentarios) {
+    lista.innerHTML = "";
+
+    if (!comentarios.length) {
+        const vazio = document.createElement("p");
+        vazio.className = "comentarios-vazio";
+        vazio.textContent = "Ainda não há comentários por aqui.";
+        lista.appendChild(vazio);
+        return;
+    }
+
+    comentarios
+        .slice()
+        .reverse()
+        .forEach((comentario) => {
+            const item = document.createElement("article");
+            item.className = "comentario-item";
+
+            const cabecalho = document.createElement("div");
+            cabecalho.className = "comentario-cabecalho";
+
+            const nome = document.createElement("strong");
+            nome.textContent = comentario.nome || "Visitante";
+            cabecalho.appendChild(nome);
+
+            const data = document.createElement("span");
+            data.textContent = formatarDataComentario(comentario.data);
+            cabecalho.appendChild(data);
+
+            const texto = document.createElement("p");
+            texto.textContent = comentario.mensagem || "";
+
+            item.appendChild(cabecalho);
+            item.appendChild(texto);
+            lista.appendChild(item);
+        });
+}
+
+function formatarDataComentario(dataIso) {
+    if (!dataIso) {
+        return "agora";
+    }
+
+    const data = new Date(dataIso);
+
+    if (Number.isNaN(data.getTime())) {
+        return "agora";
+    }
+
+    return data.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function requisitarComentariosJsonp(parametros) {
+    return new Promise((resolve, reject) => {
+        const callbackName = `didaticaComentarios_${Date.now()}_${Math.random()
+            .toString(36)
+            .slice(2)}`;
+        const url = new URL(COMENTARIOS_ENDPOINT);
+        url.searchParams.set("callback", callbackName);
+
+        Object.entries(parametros).forEach(([chave, valor]) => {
+            url.searchParams.set(chave, valor);
+        });
+
+        const script = document.createElement("script");
+        const timeout = window.setTimeout(() => {
+            limpar();
+            reject(new Error("Tempo esgotado ao acessar comentários."));
+        }, 12000);
+
+        function limpar() {
+            window.clearTimeout(timeout);
+            delete window[callbackName];
+            script.remove();
+        }
+
+        window[callbackName] = (resposta) => {
+            limpar();
+
+            if (resposta && resposta.ok === false) {
+                reject(new Error(resposta.erro || "Erro no mural de comentários."));
+                return;
+            }
+
+            resolve(resposta || {});
+        };
+
+        script.onerror = () => {
+            limpar();
+            reject(new Error("Falha ao carregar o mural de comentários."));
+        };
+
+        script.src = url.toString();
+        document.body.appendChild(script);
+    });
 }
 
 function criarBlocoPodcast(podcast) {
