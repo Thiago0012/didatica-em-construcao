@@ -50,6 +50,7 @@ const refs = {
 let digitacaoTimeout = null;
 let digitacaoExecucaoId = 0;
 let destaqueDossieTimeout = null;
+let comentariosRefreshInterval = null;
 const CHAVE_TOTAL_AULAS_RASCUNHO = "didatica-total-aulas-podcast-ia";
 const CHAVE_COMENTARIOS_LOCAL = "didatica-comentarios-local";
 const COMENTARIOS_ENDPOINT = window.DIDATICA_COMENTARIOS_ENDPOINT || "";
@@ -970,6 +971,7 @@ function criarBlocoComentarios() {
     });
 
     carregarComentarios(lista, status);
+    iniciarAtualizacaoAutomaticaComentarios(lista, status);
     return bloco;
 }
 
@@ -999,6 +1001,26 @@ function salvarComentariosLocais(comentarios) {
     );
 }
 
+function iniciarAtualizacaoAutomaticaComentarios(lista, status) {
+    if (comentariosRefreshInterval) {
+        window.clearInterval(comentariosRefreshInterval);
+    }
+
+    if (!COMENTARIOS_ENDPOINT) {
+        return;
+    }
+
+    comentariosRefreshInterval = window.setInterval(() => {
+        if (!document.body.contains(lista)) {
+            window.clearInterval(comentariosRefreshInterval);
+            comentariosRefreshInterval = null;
+            return;
+        }
+
+        carregarComentarios(lista, status, { silencioso: true });
+    }, 20000);
+}
+
 async function salvarComentario({ nome, mensagem }) {
     if (COMENTARIOS_ENDPOINT) {
         return requisitarComentariosJsonp({
@@ -1020,7 +1042,7 @@ async function salvarComentario({ nome, mensagem }) {
     return comentario;
 }
 
-async function carregarComentarios(lista, status) {
+async function carregarComentarios(lista, status, opcoes = {}) {
     try {
         const comentarios = COMENTARIOS_ENDPOINT
             ? (await requisitarComentariosJsonp({
@@ -1033,12 +1055,18 @@ async function carregarComentarios(lista, status) {
 
         if (!comentarios.length) {
             status.textContent = status.textContent || "Seja a primeira pessoa a comentar.";
+        } else if (opcoes.silencioso && status.textContent === "Seja a primeira pessoa a comentar.") {
+            status.textContent = "";
         }
     } catch (erro) {
         console.error(erro);
-        renderizarComentarios(lista, lerComentariosLocais());
-        status.textContent =
-            "Não consegui carregar o mural online agora. Mostrando apenas comentários deste aparelho.";
+        if (!lista.querySelector(".comentario-item") && !opcoes.silencioso) {
+            renderizarComentarios(lista, []);
+        }
+        if (!opcoes.silencioso) {
+            status.textContent =
+                "Não consegui carregar o mural online agora. Tente atualizar a página em alguns segundos.";
+        }
     }
 }
 
@@ -1124,7 +1152,7 @@ function requisitarComentariosJsonp(parametros) {
         const timeout = window.setTimeout(() => {
             limpar();
             reject(new Error("Tempo esgotado ao acessar comentários."));
-        }, 12000);
+        }, 45000);
 
         function limpar() {
             window.clearTimeout(timeout);
