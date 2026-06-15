@@ -201,9 +201,11 @@ function criarAulaPrincipal() {
             ),
             podcast: {
                 titulo: "Podcast da aula",
-                subtitulo: "Espaço reservado para o áudio do grupo",
+                subtitulo: "Episódio disponível",
                 descricao:
-                    "Quando o episódio estiver pronto, ele será inserido aqui como uma escuta complementar à matéria.",
+                    "Escute o episódio produzido pelo grupo como complemento à matéria, aproximando a leitura da conversa e da escuta coletiva.",
+                audio: "podcast-didatica-ia.mp3",
+                status: "Podcast com vinheta final, debate em grupo e reflexões sobre Inteligência Artificial na educação.",
                 capitulos: [
                     "Abertura do tema",
                     "Debate entre pontos de vista",
@@ -1305,13 +1307,19 @@ function criarBlocoPodcast(podcast) {
     bloco.appendChild(descricao);
 
     const player = document.createElement("div");
-    player.className = "podcast-player-card podcast-player-materia";
+    player.className = `podcast-player-card podcast-player-materia${podcast.audio ? " is-ready" : ""}`;
+    if (podcast.audio) {
+        player.dataset.audioSrc = podcast.audio;
+    }
 
     const play = document.createElement("button");
     play.type = "button";
     play.className = "podcast-play";
-    play.disabled = true;
-    play.setAttribute("aria-label", "Áudio ainda em preparação");
+    play.disabled = !podcast.audio;
+    play.setAttribute(
+        "aria-label",
+        podcast.audio ? "Reproduzir podcast" : "Áudio ainda em preparação"
+    );
     play.textContent = "▶";
     player.appendChild(play);
 
@@ -1323,9 +1331,49 @@ function criarBlocoPodcast(podcast) {
     copy.appendChild(subtitulo);
 
     const status = document.createElement("span");
-    status.textContent = "O arquivo de áudio poderá ser conectado aqui depois da gravação.";
+    status.textContent =
+        podcast.status || "O arquivo de áudio poderá ser conectado aqui depois da gravação.";
     copy.appendChild(status);
     player.appendChild(copy);
+
+    if (podcast.audio) {
+        const audio = document.createElement("audio");
+        audio.className = "podcast-audio";
+        audio.preload = "metadata";
+        audio.src = podcast.audio;
+        player.appendChild(audio);
+
+        const controles = document.createElement("div");
+        controles.className = "podcast-controles";
+        controles.setAttribute("aria-label", "Controles do podcast");
+
+        const progresso = document.createElement("input");
+        progresso.className = "podcast-progress";
+        progresso.type = "range";
+        progresso.min = "0";
+        progresso.max = "100";
+        progresso.step = "0.1";
+        progresso.value = "0";
+        progresso.setAttribute("aria-label", "Progresso do podcast");
+        controles.appendChild(progresso);
+
+        const tempos = document.createElement("div");
+        tempos.className = "podcast-tempos";
+        tempos.setAttribute("aria-hidden", "true");
+
+        const tempoAtual = document.createElement("span");
+        tempoAtual.className = "podcast-tempo-atual";
+        tempoAtual.textContent = "0:00";
+        tempos.appendChild(tempoAtual);
+
+        const tempoTotal = document.createElement("span");
+        tempoTotal.className = "podcast-tempo-total";
+        tempoTotal.textContent = "--:--";
+        tempos.appendChild(tempoTotal);
+
+        controles.appendChild(tempos);
+        player.appendChild(controles);
+    }
 
     const onda = document.createElement("div");
     onda.className = "podcast-wave";
@@ -1337,6 +1385,7 @@ function criarBlocoPodcast(podcast) {
 
     player.appendChild(onda);
     bloco.appendChild(player);
+    inicializarPodcastPlayer(player);
 
     if (podcast.capitulos && podcast.capitulos.length > 0) {
         const capitulos = document.createElement("div");
@@ -1352,6 +1401,105 @@ function criarBlocoPodcast(podcast) {
     }
 
     return bloco;
+}
+
+function inicializarPodcastPlayers() {
+    document
+        .querySelectorAll(".podcast-player-card[data-audio-src]")
+        .forEach((player) => inicializarPodcastPlayer(player));
+}
+
+function inicializarPodcastPlayer(player) {
+    if (!player || player.dataset.playerInicializado === "true") {
+        return;
+    }
+
+    const audio = player.querySelector(".podcast-audio");
+    const botao = player.querySelector(".podcast-play");
+    const progresso = player.querySelector(".podcast-progress");
+    const tempoAtual = player.querySelector(".podcast-tempo-atual");
+    const tempoTotal = player.querySelector(".podcast-tempo-total");
+
+    if (!audio || !botao || !progresso) {
+        return;
+    }
+
+    player.dataset.playerInicializado = "true";
+
+    const atualizarVisual = () => {
+        const duracao = Number.isFinite(audio.duration) ? audio.duration : 0;
+        const atual = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+
+        const percentual = duracao > 0 ? (atual / duracao) * 100 : 0;
+        progresso.value = String(percentual);
+        progresso.style.setProperty("--podcast-progress", `${percentual}%`);
+
+        if (tempoAtual) {
+            tempoAtual.textContent = formatarTempoPodcast(atual);
+        }
+
+        if (tempoTotal) {
+            tempoTotal.textContent = duracao > 0 ? formatarTempoPodcast(duracao) : "--:--";
+        }
+
+        botao.textContent = audio.paused ? "▶" : "❚❚";
+        botao.setAttribute("aria-label", audio.paused ? "Reproduzir podcast" : "Pausar podcast");
+        player.classList.toggle("is-playing", !audio.paused);
+    };
+
+    botao.addEventListener("click", async () => {
+        if (audio.paused) {
+            pausarOutrosPodcasts(audio);
+
+            try {
+                await audio.play();
+            } catch (erro) {
+                console.error(erro);
+            }
+        } else {
+            audio.pause();
+        }
+
+        atualizarVisual();
+    });
+
+    progresso.addEventListener("input", () => {
+        if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
+            return;
+        }
+
+        audio.currentTime = (Number(progresso.value) / 100) * audio.duration;
+        atualizarVisual();
+    });
+
+    audio.addEventListener("loadedmetadata", atualizarVisual);
+    audio.addEventListener("timeupdate", atualizarVisual);
+    audio.addEventListener("play", atualizarVisual);
+    audio.addEventListener("pause", atualizarVisual);
+    audio.addEventListener("ended", () => {
+        audio.currentTime = 0;
+        atualizarVisual();
+    });
+
+    atualizarVisual();
+}
+
+function pausarOutrosPodcasts(audioAtual) {
+    document.querySelectorAll(".podcast-audio").forEach((audio) => {
+        if (audio !== audioAtual) {
+            audio.pause();
+        }
+    });
+}
+
+function formatarTempoPodcast(segundos) {
+    if (!Number.isFinite(segundos) || segundos < 0) {
+        return "0:00";
+    }
+
+    const minutos = Math.floor(segundos / 60);
+    const resto = Math.floor(segundos % 60).toString().padStart(2, "0");
+    return `${minutos}:${resto}`;
 }
 
 function criarBlocoVideos({ id, titulo, descricao, videos }) {
@@ -1564,6 +1712,8 @@ function voltarDoDossie() {
     limparDestaqueDossie();
     mostrarTela("conteudo");
 }
+
+inicializarPodcastPlayers();
 
 refs.tooltipCard.addEventListener("mouseenter", () => {
     window.clearTimeout(hideTooltipTimer);

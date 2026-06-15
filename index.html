@@ -19,7 +19,7 @@
                     <h1>Didática em <span class="titulo-destaque">construção</span></h1>
                     <p class="texto-base texto-intro">
                         Um portfólio visual para transformar ideias da Didática em percursos de
-                        leitura, imagem interativa e, em breve, podcast.
+                        leitura, imagem interativa e podcast.
                     </p>
 
                     <div class="intro-acoes">
@@ -42,7 +42,7 @@
                     <div class="intro-trilha">
                         <span><strong>01</strong> Imagem interativa</span>
                         <span><strong>02</strong> Reflexão didática</span>
-                        <span><strong>03</strong> Podcast em breve</span>
+                        <span><strong>03</strong> Podcast do grupo</span>
                     </div>
 
                     <div class="pergunta-guia-card">
@@ -74,7 +74,7 @@
                         <h2>Uma entrada simples para explorar o projeto</h2>
                         <p class="texto-base">
                             A primeira aula concentra a matéria sobre Inteligência Artificial,
-                            imagem interativa e o futuro podcast do grupo em um só percurso.
+                            imagem interativa e o podcast do grupo em um só percurso.
                         </p>
 
                         <div class="aula-status-grid" aria-label="Estado do projeto">
@@ -139,11 +139,11 @@
 
                 <section class="podcast-preview" aria-labelledby="podcast-preview-title">
                     <div class="podcast-copy">
-                        <span class="tag-topo tag-prototipo">Espaço futuro</span>
+                        <span class="tag-topo tag-prototipo">Podcast disponível</span>
                         <h2 id="podcast-preview-title">Podcast do portfólio</h2>
                         <p class="texto-base">
-                            Quando o áudio estiver pronto, ele entra aqui como uma extensão da leitura:
-                            menos formal, mais próxima da fala do grupo.
+                            Escute o episódio produzido pelo grupo como extensão da leitura:
+                            menos formal, mais próximo da conversa e da escuta coletiva.
                         </p>
                         <div class="podcast-capitulos" aria-label="Possíveis blocos do episódio">
                             <span>Introdução</span>
@@ -153,13 +153,21 @@
                         </div>
                     </div>
 
-                    <div class="podcast-player-card" aria-label="Prévia visual do player de áudio">
-                        <button type="button" class="podcast-play" disabled aria-label="Áudio ainda em preparação">
+                    <div class="podcast-player-card is-ready" data-audio-src="podcast-didatica-ia.mp3" aria-label="Player de áudio do podcast">
+                        <button type="button" class="podcast-play" aria-label="Reproduzir podcast">
                             ▶
                         </button>
                         <div class="podcast-player-copy">
-                            <strong>Episódio em construção</strong>
-                            <span>O arquivo de áudio entra aqui quando o grupo finalizar a gravação.</span>
+                            <strong>Episódio disponível</strong>
+                            <span>Podcast com vinheta final, debate em grupo e reflexões sobre Inteligência Artificial na educação.</span>
+                        </div>
+                        <audio class="podcast-audio" preload="metadata" src="podcast-didatica-ia.mp3"></audio>
+                        <div class="podcast-controles" aria-label="Controles do podcast">
+                            <input class="podcast-progress" type="range" min="0" max="100" step="0.1" value="0" aria-label="Progresso do podcast">
+                            <div class="podcast-tempos" aria-hidden="true">
+                                <span class="podcast-tempo-atual">0:00</span>
+                                <span class="podcast-tempo-total">--:--</span>
+                            </div>
                         </div>
                         <div class="podcast-wave" aria-hidden="true">
                             <span></span>
