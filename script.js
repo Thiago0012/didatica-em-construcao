@@ -53,6 +53,7 @@ let destaqueDossieTimeout = null;
 let comentariosRefreshInterval = null;
 const CHAVE_TOTAL_AULAS_RASCUNHO = "didatica-total-aulas-podcast-ia";
 const CHAVE_COMENTARIOS_LOCAL = "didatica-comentarios-local";
+const ATRASOS_RECARREGAR_COMENTARIOS = [1200, 2600];
 const COMENTARIOS_ENDPOINT = window.DIDATICA_COMENTARIOS_ENDPOINT || "";
 const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
     ? window.CONTEUDO_AULA_1
@@ -1044,17 +1045,29 @@ async function salvarComentario({ nome, mensagem }) {
 
 async function carregarComentarios(lista, status, opcoes = {}) {
     try {
+        if (!opcoes.silencioso && COMENTARIOS_ENDPOINT) {
+            status.textContent = status.textContent || "Carregando comentários da turma...";
+        }
+
         const comentarios = COMENTARIOS_ENDPOINT
-            ? (await requisitarComentariosJsonp({
-                  action: "list",
-                  aula: String(aulaSelecionada || 1)
-              })).comentarios || []
+            ? (await requisitarComentariosComTentativas(
+                  {
+                      action: "list",
+                      aula: String(aulaSelecionada || 1)
+                  },
+                  {
+                      tentativas: opcoes.silencioso ? 1 : 3,
+                      atrasos: ATRASOS_RECARREGAR_COMENTARIOS
+                  }
+              )).comentarios || []
             : lerComentariosLocais();
 
         renderizarComentarios(lista, comentarios);
 
         if (!comentarios.length) {
             status.textContent = status.textContent || "Seja a primeira pessoa a comentar.";
+        } else if (!opcoes.silencioso && status.textContent === "Carregando comentários da turma...") {
+            status.textContent = "";
         } else if (opcoes.silencioso && status.textContent === "Seja a primeira pessoa a comentar.") {
             status.textContent = "";
         }
@@ -1136,6 +1149,32 @@ function formatarDataComentario(dataIso) {
     });
 }
 
+function esperarComentarios(ms) {
+    return new Promise((resolve) => {
+        window.setTimeout(resolve, ms);
+    });
+}
+
+async function requisitarComentariosComTentativas(parametros, opcoes = {}) {
+    const tentativas = opcoes.tentativas || 1;
+    const atrasos = opcoes.atrasos || [];
+    let ultimoErro = null;
+
+    for (let tentativa = 1; tentativa <= tentativas; tentativa += 1) {
+        try {
+            return await requisitarComentariosJsonp(parametros);
+        } catch (erro) {
+            ultimoErro = erro;
+
+            if (tentativa < tentativas) {
+                await esperarComentarios(atrasos[tentativa - 1] || 1500);
+            }
+        }
+    }
+
+    throw ultimoErro || new Error("Falha ao acessar comentários.");
+}
+
 function requisitarComentariosJsonp(parametros) {
     return new Promise((resolve, reject) => {
         const callbackName = `didaticaComentarios_${Date.now()}_${Math.random()
@@ -1143,6 +1182,7 @@ function requisitarComentariosJsonp(parametros) {
             .slice(2)}`;
         const url = new URL(COMENTARIOS_ENDPOINT);
         url.searchParams.set("callback", callbackName);
+        url.searchParams.set("_", `${Date.now()}_${Math.random().toString(36).slice(2)}`);
 
         Object.entries(parametros).forEach(([chave, valor]) => {
             url.searchParams.set(chave, valor);
