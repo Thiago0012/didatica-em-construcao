@@ -205,7 +205,6 @@ function criarAulaPrincipal() {
                 descricao:
                     "Escute o episódio produzido pelo grupo como complemento à matéria, aproximando a leitura da conversa e da escuta coletiva.",
                 audio: "podcast-didatica-ia.mp3",
-                status: "Podcast com vinheta final, debate em grupo e reflexões sobre Inteligência Artificial na educação.",
                 capitulos: [
                     "Abertura do tema",
                     "Debate entre pontos de vista",
@@ -1330,10 +1329,11 @@ function criarBlocoPodcast(podcast) {
     subtitulo.textContent = podcast.subtitulo;
     copy.appendChild(subtitulo);
 
-    const status = document.createElement("span");
-    status.textContent =
-        podcast.status || "O arquivo de áudio poderá ser conectado aqui depois da gravação.";
-    copy.appendChild(status);
+    if (podcast.status) {
+        const status = document.createElement("span");
+        status.textContent = podcast.status;
+        copy.appendChild(status);
+    }
     player.appendChild(copy);
 
     if (podcast.audio) {
