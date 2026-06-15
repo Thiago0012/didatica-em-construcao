@@ -712,11 +712,20 @@ function abrirDossieCompleto(secaoInicialId = null) {
     refs.dossieKicker.textContent = aula.dossie.kicker || "Leitura em formato de matéria";
     refs.dossieTitulo.textContent =
         aula.dossie.tituloCompleto || `${aula.titulo}: ${aula.subtitulo}`;
-    refs.dossieResumo.textContent = aula.resumo;
+    const resumoDossie = aula.resumo || "";
+    refs.dossieResumo.textContent = resumoDossie;
     refs.dossieCapa.src = aula.imagem;
     refs.dossieCapa.alt = `Imagem principal da ${aula.titulo}`;
     refs.dossieDestaque.textContent = aula.dossie.destaque || aula.pergunta;
-    refs.dossieContexto.textContent = aula.dossie.contexto || aula.descricaoPainel;
+    const contextoDossie = aula.dossie.contexto || aula.descricaoPainel || "";
+
+    if (contextoDossie && contextoDossie.trim() !== resumoDossie.trim()) {
+        refs.dossieContexto.textContent = contextoDossie;
+        refs.dossieContexto.hidden = false;
+    } else {
+        refs.dossieContexto.textContent = "";
+        refs.dossieContexto.hidden = true;
+    }
 
     refs.dossieMeta.innerHTML = "";
     (aula.dossie.meta || [
@@ -745,6 +754,13 @@ function abrirDossieCompleto(secaoInicialId = null) {
     );
 
     refs.dossieTopicos.appendChild(criarTopicoDossie(tituloPanorama, "materia-panorama"));
+
+    if (aula.dossie.podcast) {
+        refs.dossieArtigo.appendChild(criarBlocoPodcast(aula.dossie.podcast));
+        refs.dossieTopicos.appendChild(
+            criarTopicoDossie(aula.dossie.podcast.titulo, "materia-podcast-aula")
+        );
+    }
 
     aula.dossie.secoes.forEach((secao) => {
         const pontoRelacionado = aula.pontos.find((ponto) => ponto.id === secao.id);
@@ -777,13 +793,6 @@ function abrirDossieCompleto(secaoInicialId = null) {
 
         refs.dossieTopicos.appendChild(
             criarTopicoDossie("Vídeos complementares", "materia-videos-complementares")
-        );
-    }
-
-    if (aula.dossie.podcast) {
-        refs.dossieArtigo.appendChild(criarBlocoPodcast(aula.dossie.podcast));
-        refs.dossieTopicos.appendChild(
-            criarTopicoDossie(aula.dossie.podcast.titulo, "materia-podcast-aula")
         );
     }
 
