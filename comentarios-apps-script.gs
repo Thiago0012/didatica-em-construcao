@@ -72,6 +72,32 @@ function listarComentarios(sheet, aula) {
     }));
 }
 
+function limparMuralParaApresentacao() {
+  const sheet = obterAba();
+  apagarComentarios(sheet);
+
+  const data = new Date();
+  sheet.appendRow([
+    data.toISOString(),
+    "1",
+    "Portfolio Didatica",
+    "Mural pronto para a apresentacao. Deixe seu comentario sobre a aula!"
+  ]);
+}
+
+function limparMuralCompleto() {
+  const sheet = obterAba();
+  apagarComentarios(sheet);
+}
+
+function apagarComentarios(sheet) {
+  const ultimaLinha = sheet.getLastRow();
+
+  if (ultimaLinha > 1) {
+    sheet.deleteRows(2, ultimaLinha - 1);
+  }
+}
+
 function limparTexto(valor, limite) {
   return String(valor || "")
     .replace(/\s+/g, " ")
