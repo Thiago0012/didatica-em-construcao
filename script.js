@@ -51,9 +51,12 @@ let digitacaoTimeout = null;
 let digitacaoExecucaoId = 0;
 let destaqueDossieTimeout = null;
 let comentariosRefreshInterval = null;
+let comentariosCarregando = false;
+let comentariosUltimaAssinatura = "";
 const CHAVE_TOTAL_AULAS_RASCUNHO = "didatica-total-aulas-podcast-ia";
 const CHAVE_COMENTARIOS_LOCAL = "didatica-comentarios-local";
 const ATRASOS_RECARREGAR_COMENTARIOS = [1200, 2600];
+const INTERVALO_COMENTARIOS_AO_VIVO = 5000;
 const COMENTARIOS_ENDPOINT = window.DIDATICA_COMENTARIOS_ENDPOINT || "";
 const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
     ? window.CONTEUDO_AULA_1
@@ -941,6 +944,7 @@ function criarBlocoComentarios() {
     const lista = document.createElement("div");
     lista.className = "comentarios-lista";
     bloco.appendChild(lista);
+    comentariosUltimaAssinatura = "";
 
     formulario.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -1011,15 +1015,40 @@ function iniciarAtualizacaoAutomaticaComentarios(lista, status) {
         return;
     }
 
-    comentariosRefreshInterval = window.setInterval(() => {
+    const atualizarAoVivo = () => {
         if (!document.body.contains(lista)) {
             window.clearInterval(comentariosRefreshInterval);
             comentariosRefreshInterval = null;
             return;
         }
 
-        carregarComentarios(lista, status, { silencioso: true });
-    }, 20000);
+        if (!comentariosEstaoVisiveis(lista)) {
+            return;
+        }
+
+        carregarComentarios(lista, status, {
+            silencioso: true,
+            evitarRenderIgual: true
+        });
+    };
+
+    comentariosRefreshInterval = window.setInterval(() => {
+        atualizarAoVivo();
+    }, INTERVALO_COMENTARIOS_AO_VIVO);
+
+    atualizarAoVivo();
+}
+
+function comentariosEstaoVisiveis(lista) {
+    if (document.visibilityState === "hidden") {
+        return false;
+    }
+
+    const bloco = lista.closest(".materia-comentarios") || lista;
+    const caixa = bloco.getBoundingClientRect();
+    const alturaTela = window.innerHeight || document.documentElement.clientHeight;
+
+    return caixa.top < alturaTela + 160 && caixa.bottom > -160;
 }
 
 async function salvarComentario({ nome, mensagem }) {
@@ -1044,6 +1073,12 @@ async function salvarComentario({ nome, mensagem }) {
 }
 
 async function carregarComentarios(lista, status, opcoes = {}) {
+    if (opcoes.silencioso && comentariosCarregando) {
+        return;
+    }
+
+    comentariosCarregando = true;
+
     try {
         if (!opcoes.silencioso && COMENTARIOS_ENDPOINT) {
             status.textContent = status.textContent || "Carregando comentários da turma...";
@@ -1062,7 +1097,12 @@ async function carregarComentarios(lista, status, opcoes = {}) {
               )).comentarios || []
             : lerComentariosLocais();
 
-        renderizarComentarios(lista, comentarios);
+        const assinatura = gerarAssinaturaComentarios(comentarios);
+
+        if (!opcoes.evitarRenderIgual || assinatura !== comentariosUltimaAssinatura) {
+            renderizarComentarios(lista, comentarios);
+            comentariosUltimaAssinatura = assinatura;
+        }
 
         if (!comentarios.length) {
             status.textContent = status.textContent || "Seja a primeira pessoa a comentar.";
@@ -1080,7 +1120,19 @@ async function carregarComentarios(lista, status, opcoes = {}) {
             status.textContent =
                 "Não consegui carregar o mural online agora. Tente atualizar a página em alguns segundos.";
         }
+    } finally {
+        comentariosCarregando = false;
     }
+}
+
+function gerarAssinaturaComentarios(comentarios) {
+    return comentarios
+        .map((comentario) => [
+            comentario.data || "",
+            comentario.nome || "",
+            comentario.mensagem || ""
+        ].join("|"))
+        .join("::");
 }
 
 function renderizarComentarios(lista, comentarios) {
