@@ -62,6 +62,9 @@ const COMENTARIOS_ENDPOINT = window.DIDATICA_COMENTARIOS_ENDPOINT || "";
 const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
     ? window.CONTEUDO_AULA_1
     : [];
+const ABERTURA_MATERIA_AULA_1 = Array.isArray(window.ABERTURA_AULA_1)
+    ? window.ABERTURA_AULA_1
+    : TEXTO_MATERIA_AULA_1.slice(3, 6);
 
 inicializarModoPodcastRascunho();
 
@@ -212,7 +215,7 @@ function criarAulaPrincipal() {
                     "Fechamento reflexivo"
                 ]
             },
-            introducao: TEXTO_MATERIA_AULA_1.slice(3, 6),
+            introducao: ABERTURA_MATERIA_AULA_1,
             secoes: [
                 {
                     id: "ia-fenomeno-social",

@@ -55,3 +55,12 @@
     "QUANDO sinto que já sei. Direção de Cacau Rhoden. Brasil, 2014. Disponível em: https://www.youtube.com/watch?v=HX6P6P3x1Qg. Acesso em: 01 jun. 2026."
 ];
 
+window.ABERTURA_AULA_1 = [
+    "Todo projeto começa com uma ideia que vai mudando de forma antes de chegar ao resultado final. Este não foi diferente.",
+    "No início do semestre, a proposta do portfólio individual girava em torno de um formato mais visual: imagens interativas acompanhadas de um texto-base que reunisse os principais temas trabalhados ao longo da disciplina. Era uma ideia clara, com começo, meio e fim. Mas as ideias boas costumam se expandir — e foi exatamente isso que aconteceu.",
+    "A professora Julianne abriu uma segunda possibilidade: quem quisesse poderia desenvolver o portfólio num formato mais livre, cobrindo os grandes temas da matéria com autonomia criativa. E foi nesse espaço aberto que uma terceira ideia surgiu — desta vez vinda da turma: e se fizéssemos um podcast? O formato de áudio, dinâmico e dialógico por natureza, parecia perfeito para um trabalho que deveria registrar não apenas conteúdos, mas pontos de vista, debates e reflexões reais entre estudantes.",
+    "A decisão que tomei foi a de não escolher entre um caminho e outro — e sim juntar os dois. O site interativo continuou como base, mas ganhou um novo habitante: o podcast. E o texto que você está lendo agora nasceu exatamente dessa junção — como material de apoio para quem ouviu o episódio e quer se aprofundar, e também para quem ainda não ouviu e prefere começar pela leitura.",
+    "A escolha do tema — Inteligência Artificial na formação de professores — não foi aleatória. Há algo de muito coerente em discutir tecnologia e ensino num projeto que foi construído, ele mesmo, dentro de um ambiente digital, com ferramentas tecnológicas, num formato contemporâneo de comunicação. O tema escolhido para o debate era, ao mesmo tempo, o contexto em que o trabalho estava sendo produzido. Essa sobreposição entre forma e conteúdo foi intencional — e é, também, um exercício didático em si.",
+    "O resultado foi um episódio que tratou de assuntos que vão muito além do \"a favor ou contra a IA\": falamos sobre planejamento docente, sobre os saberes que fazem um professor ser professor, sobre tendências pedagógicas, sobre avaliação e sobre o que nenhuma tecnologia consegue substituir no encontro entre quem ensina e quem aprende. O texto que você tem diante de si é a versão expandida desse encontro — mais detalhada, mais referenciada, mais pausada. Como toda boa leitura deve ser."
+];
+
