@@ -50,13 +50,14 @@ const refs = {
 let digitacaoTimeout = null;
 let digitacaoExecucaoId = 0;
 let destaqueDossieTimeout = null;
-let comentariosRefreshInterval = null;
+let comentariosRefreshTimer = null;
 let comentariosCarregando = false;
 let comentariosUltimaAssinatura = "";
 const CHAVE_TOTAL_AULAS_RASCUNHO = "didatica-total-aulas-podcast-ia";
 const CHAVE_COMENTARIOS_LOCAL = "didatica-comentarios-local";
 const ATRASOS_RECARREGAR_COMENTARIOS = [1200, 2600];
 const INTERVALO_COMENTARIOS_AO_VIVO = 5000;
+const VARIACAO_COMENTARIOS_AO_VIVO = 3500;
 const COMENTARIOS_ENDPOINT = window.DIDATICA_COMENTARIOS_ENDPOINT || "";
 const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
     ? window.CONTEUDO_AULA_1
@@ -1007,8 +1008,9 @@ function salvarComentariosLocais(comentarios) {
 }
 
 function iniciarAtualizacaoAutomaticaComentarios(lista, status) {
-    if (comentariosRefreshInterval) {
-        window.clearInterval(comentariosRefreshInterval);
+    if (comentariosRefreshTimer) {
+        window.clearTimeout(comentariosRefreshTimer);
+        comentariosRefreshTimer = null;
     }
 
     if (!COMENTARIOS_ENDPOINT) {
@@ -1017,8 +1019,8 @@ function iniciarAtualizacaoAutomaticaComentarios(lista, status) {
 
     const atualizarAoVivo = () => {
         if (!document.body.contains(lista)) {
-            window.clearInterval(comentariosRefreshInterval);
-            comentariosRefreshInterval = null;
+            window.clearTimeout(comentariosRefreshTimer);
+            comentariosRefreshTimer = null;
             return;
         }
 
@@ -1032,11 +1034,22 @@ function iniciarAtualizacaoAutomaticaComentarios(lista, status) {
         });
     };
 
-    comentariosRefreshInterval = window.setInterval(() => {
-        atualizarAoVivo();
-    }, INTERVALO_COMENTARIOS_AO_VIVO);
-
     atualizarAoVivo();
+    agendarAtualizacaoComentariosAoVivo(lista, atualizarAoVivo);
+}
+
+function agendarAtualizacaoComentariosAoVivo(lista, atualizarAoVivo) {
+    if (!document.body.contains(lista)) {
+        comentariosRefreshTimer = null;
+        return;
+    }
+
+    const variacao = Math.floor(Math.random() * VARIACAO_COMENTARIOS_AO_VIVO);
+
+    comentariosRefreshTimer = window.setTimeout(() => {
+        atualizarAoVivo();
+        agendarAtualizacaoComentariosAoVivo(lista, atualizarAoVivo);
+    }, INTERVALO_COMENTARIOS_AO_VIVO + variacao);
 }
 
 function comentariosEstaoVisiveis(lista) {
