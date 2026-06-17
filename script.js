@@ -44,12 +44,14 @@ const refs = {
     dossieDestaque: document.getElementById("dossie-destaque"),
     dossieContexto: document.getElementById("dossie-contexto"),
     dossieArtigo: document.getElementById("dossie-artigo"),
-    dossieTopicos: document.getElementById("dossie-topicos")
+    dossieTopicos: document.getElementById("dossie-topicos"),
+    botaoVoltarDossie: document.getElementById("btn-voltar-dossie")
 };
 
 let digitacaoTimeout = null;
 let digitacaoExecucaoId = 0;
 let destaqueDossieTimeout = null;
+let origemDossie = "conteudo";
 let comentariosRefreshTimer = null;
 let comentariosCarregando = false;
 let comentariosUltimaAssinatura = "";
@@ -561,9 +563,9 @@ function mostrarConteudoAula() {
     mostrarTela("conteudo");
 }
 
-function abrirMateriaPrincipal() {
+function abrirPodcastPeloProjeto() {
     aulaSelecionada = 1;
-    abrirDossieCompleto();
+    abrirDossieCompleto("podcast-aula", "guia-projeto");
 }
 
 function renderizarListaPontosMobile(aula) {
@@ -717,11 +719,17 @@ function abrirDetalhePonto(idSecao) {
     abrirDossieCompleto(idSecao);
 }
 
-function abrirDossieCompleto(secaoInicialId = null) {
+function abrirDossieCompleto(secaoInicialId = null, origem = "conteudo") {
     const aula = dadosAulas[aulaSelecionada];
 
     if (!aula) {
         return;
+    }
+
+    origemDossie = origem;
+    if (refs.botaoVoltarDossie) {
+        refs.botaoVoltarDossie.textContent =
+            origemDossie === "guia-projeto" ? "Voltar ao projeto" : "Voltar para a aula";
     }
 
     refs.dossieTag.textContent = aula.titulo;
@@ -1733,8 +1741,43 @@ function rolarParaSecaoDossie(destinoId) {
     }, 1800);
 }
 
+function voltarParaGuiaDoPodcast() {
+    const guia = document.getElementById("guia-inicial");
+    const botao = document.getElementById("btn-entender-projeto");
+    const podcastResumo = document.querySelector(".podcast-preview-resumo");
+
+    mostrarTela("inicial");
+
+    if (guia) {
+        guia.hidden = false;
+        botao?.setAttribute("aria-expanded", "true");
+    }
+
+    window.requestAnimationFrame(() => {
+        const alvo = podcastResumo || guia;
+
+        if (!alvo) {
+            return;
+        }
+
+        const topoAlvo = alvo.getBoundingClientRect().top + window.scrollY - 18;
+        window.scrollTo({
+            top: Math.max(topoAlvo, 0),
+            behavior: "smooth",
+        });
+    });
+}
+
 function voltarDoDossie() {
     limparDestaqueDossie();
+
+    if (origemDossie === "guia-projeto") {
+        origemDossie = "conteudo";
+        voltarParaGuiaDoPodcast();
+        return;
+    }
+
+    origemDossie = "conteudo";
     mostrarTela("conteudo");
 }
 
