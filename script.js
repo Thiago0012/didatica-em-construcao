@@ -65,6 +65,10 @@ const TEXTO_MATERIA_AULA_1 = Array.isArray(window.CONTEUDO_AULA_1)
 const ABERTURA_MATERIA_AULA_1 = Array.isArray(window.ABERTURA_AULA_1)
     ? window.ABERTURA_AULA_1
     : TEXTO_MATERIA_AULA_1.slice(3, 6);
+const BASTIDORES_MATERIA_AULA_1 =
+    window.BASTIDORES_AULA_1 && Array.isArray(window.BASTIDORES_AULA_1.paragrafos)
+        ? window.BASTIDORES_AULA_1
+        : null;
 
 inicializarModoPodcastRascunho();
 
@@ -229,8 +233,12 @@ function criarAulaPrincipal() {
                 },
                 {
                     id: "bastidores-podcast",
-                    titulo: textoAula1(11),
-                    paragrafos: TEXTO_MATERIA_AULA_1.slice(12, 16)
+                    titulo: BASTIDORES_MATERIA_AULA_1
+                        ? BASTIDORES_MATERIA_AULA_1.titulo
+                        : textoAula1(11),
+                    paragrafos: BASTIDORES_MATERIA_AULA_1
+                        ? BASTIDORES_MATERIA_AULA_1.paragrafos
+                        : TEXTO_MATERIA_AULA_1.slice(12, 16)
                 },
                 {
                     id: "planejamento-docente",

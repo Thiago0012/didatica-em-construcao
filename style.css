@@ -779,6 +779,104 @@ h3 {
     margin-bottom: 10px;
 }
 
+.projeto-percurso {
+    position: relative;
+    z-index: 1;
+    margin-top: 18px;
+    padding: clamp(20px, 3vw, 30px);
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at 8% 12%, rgba(240, 138, 36, 0.14), transparent 34%),
+        radial-gradient(circle at 90% 8%, rgba(36, 208, 183, 0.14), transparent 32%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.74), rgba(237, 246, 255, 0.56));
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    box-shadow: 0 22px 52px rgba(24, 34, 48, 0.12);
+    overflow: hidden;
+}
+
+.projeto-percurso::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 24px;
+    border: 1px solid rgba(21, 83, 165, 0.08);
+    pointer-events: none;
+}
+
+.projeto-percurso > * {
+    position: relative;
+    z-index: 1;
+}
+
+.projeto-percurso-cabecalho {
+    max-width: 760px;
+    margin-bottom: 20px;
+}
+
+.projeto-percurso-cabecalho h2 {
+    margin-top: 12px;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+    letter-spacing: -0.035em;
+}
+
+.projeto-percurso-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.projeto-percurso-card {
+    position: relative;
+    display: grid;
+    gap: 14px;
+    padding: clamp(20px, 2.6vw, 28px);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(24, 34, 48, 0.08);
+    box-shadow: 0 16px 34px rgba(24, 34, 48, 0.09);
+}
+
+.projeto-percurso-card-principal {
+    border-left: 5px solid rgba(240, 138, 36, 0.72);
+}
+
+.projeto-percurso-card-destaque {
+    background:
+        radial-gradient(circle at 90% 6%, rgba(36, 208, 183, 0.16), transparent 36%),
+        rgba(255, 255, 255, 0.8);
+    border-top: 5px solid rgba(29, 111, 217, 0.58);
+}
+
+.projeto-card-etiqueta {
+    width: fit-content;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(29, 111, 217, 0.1);
+    color: var(--brand-dark);
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.projeto-percurso-card h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.4vw, 1.72rem);
+    line-height: 1.18;
+}
+
+.projeto-percurso-card p {
+    color: var(--text-main);
+    font-size: 1rem;
+    line-height: 1.78;
+}
+
+.projeto-percurso-card p + p {
+    margin-top: 2px;
+}
+
 .podcast-preview {
     position: relative;
     z-index: 1;
@@ -2479,6 +2577,7 @@ body.mobile-sheet-aberto {
 
     .intro-hero,
     .intro-guia,
+    .projeto-percurso-grid,
     .podcast-preview {
         grid-template-columns: 1fr;
     }
