@@ -169,13 +169,14 @@
                     </div>
                 </section>
 
-                <section class="podcast-preview" aria-labelledby="podcast-preview-title">
+                <section class="podcast-preview podcast-preview-resumo" aria-labelledby="podcast-preview-title">
                     <div class="podcast-copy">
                         <span class="tag-topo tag-prototipo">Podcast disponível</span>
                         <h2 id="podcast-preview-title">Podcast do portfólio</h2>
                         <p class="texto-base">
-                            Escute o episódio produzido pelo grupo como extensão da leitura:
-                            menos formal, mais próximo da conversa e da escuta coletiva.
+                            O player completo fica dentro da matéria, no mesmo percurso da imagem
+                            interativa e da leitura teórica. Assim, primeiro você entende como o
+                            projeto foi construído; depois, entra na aula para escutar e aprofundar.
                         </p>
                         <div class="podcast-capitulos" aria-label="Possíveis blocos do episódio">
                             <span>Introdução</span>
@@ -185,31 +186,16 @@
                         </div>
                     </div>
 
-                    <div class="podcast-player-card is-ready" data-audio-src="podcast-didatica-ia.mp3" aria-label="Player de áudio do podcast">
-                        <button type="button" class="podcast-play" aria-label="Reproduzir podcast">
-                            ▶
+                    <div class="podcast-resumo-card" aria-label="Atalho para o podcast na matéria">
+                        <span class="podcast-resumo-icone" aria-hidden="true">♪</span>
+                        <strong>Ouça no contexto da aula</strong>
+                        <p>
+                            Acesse a Aula 1 e abra a matéria para encontrar o player junto da
+                            discussão sobre Inteligência Artificial e Didática.
+                        </p>
+                        <button type="button" class="btn-destaque" onclick="abrirMateriaPrincipal()">
+                            Ir para a matéria
                         </button>
-                        <div class="podcast-player-copy">
-                            <strong>Episódio disponível</strong>
-                        </div>
-                        <audio class="podcast-audio" preload="metadata" src="podcast-didatica-ia.mp3"></audio>
-                        <div class="podcast-controles" aria-label="Controles do podcast">
-                            <input class="podcast-progress" type="range" min="0" max="100" step="0.1" value="0" aria-label="Progresso do podcast">
-                            <div class="podcast-tempos" aria-hidden="true">
-                                <span class="podcast-tempo-atual">0:00</span>
-                                <span class="podcast-tempo-total">--:--</span>
-                            </div>
-                        </div>
-                        <div class="podcast-wave" aria-hidden="true">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
                     </div>
                 </section>
             </div>

@@ -561,6 +561,11 @@ function mostrarConteudoAula() {
     mostrarTela("conteudo");
 }
 
+function abrirMateriaPrincipal() {
+    aulaSelecionada = 1;
+    abrirDossieCompleto();
+}
+
 function renderizarListaPontosMobile(aula) {
     if (!refs.listaPontosMobile) {
         return;
