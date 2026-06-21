@@ -21,7 +21,7 @@ const refs = {
     resumoAula: document.getElementById("resumo-aula"),
     tituloPainel: document.getElementById("titulo-painel"),
     descricaoPainel: document.getElementById("descricao-painel"),
-    botaoVideosAula: document.getElementById("btn-videos-aula"),
+    botaoPodcastAula: document.getElementById("btn-podcast-aula"),
     textoAjudaInteracao: document.getElementById("texto-ajuda-interacao"),
     tooltipCard: document.getElementById("tooltip-card"),
     tooltipTag: document.getElementById("tooltip-tag"),
@@ -497,7 +497,7 @@ function abrirAula(numero) {
 function mostrarConteudoAula() {
     interromperDigitacao();
     const aula = dadosAulas[aulaSelecionada];
-    const videosAula = aula.dossie.videos || [];
+    const podcastAula = aula.dossie.podcast;
 
     refs.tagAulaAtual.textContent = aula.subtitulo;
     refs.tituloAula.textContent = aula.titulo;
@@ -506,13 +506,12 @@ function mostrarConteudoAula() {
     refs.descricaoPainel.textContent = aula.descricaoPainel;
     refs.imagemAula.src = aula.imagem;
     refs.imagemAula.alt = `Resumo visual da ${aula.titulo}`;
-    refs.botaoVideosAula.hidden = videosAula.length === 0;
-    refs.textoAjudaInteracao.innerHTML = usaInterfaceToque()
-        ? 'Toque nos símbolos de <strong>+</strong> ou use a lista "Pontos da imagem" para abrir um resumo. Depois toque em "Saber mais" para ir direto ao trecho da matéria.'
-        : 'Passe o mouse sobre os símbolos de <strong>+</strong> para ver um resumo rápido. Clique em qualquer ponto interativo ou no botão "Saber mais" para abrir a leitura completa da aula.';
+    refs.botaoPodcastAula.hidden = !podcastAula;
+    refs.textoAjudaInteracao.innerHTML =
+        'No computador, passe o mouse sobre os símbolos de <strong>+</strong>; no celular, toque nos pontos interativos para ver os resumos. Depois, use "Saber mais" para abrir a matéria completa.';
 
-    if (videosAula.length > 0) {
-        refs.botaoVideosAula.textContent = `Ver vídeos da ${aula.titulo}`;
+    if (podcastAula) {
+        refs.botaoPodcastAula.textContent = "Ouvir podcast";
     }
 
     refs.containerDinamico
@@ -613,14 +612,14 @@ function renderizarListaPontosMobile(aula) {
     refs.listaPontosMobile.appendChild(grid);
 }
 
-function abrirVideosAula() {
+function abrirPodcastDaAula() {
     const aula = dadosAulas[aulaSelecionada];
 
-    if (!aula || !aula.dossie.videos || aula.dossie.videos.length === 0) {
+    if (!aula || !aula.dossie.podcast) {
         return;
     }
 
-    abrirDossieCompleto("videos-complementares");
+    abrirDossieCompleto("podcast-aula");
 }
 
 function mostrarTooltip(ponto, elemento) {
@@ -1197,6 +1196,7 @@ function renderizarComentarios(lista, comentarios) {
         .slice()
         .reverse()
         .forEach((comentario) => {
+            const comentarioNormalizado = normalizarComentarioApresentacao(comentario);
             const item = document.createElement("article");
             item.className = "comentario-item";
 
@@ -1212,21 +1212,37 @@ function renderizarComentarios(lista, comentarios) {
             cabecalho.className = "comentario-cabecalho";
 
             const nome = document.createElement("strong");
-            nome.textContent = comentario.nome || "Visitante";
+            nome.textContent = comentarioNormalizado.nome || "Visitante";
             cabecalho.appendChild(nome);
 
             const data = document.createElement("span");
-            data.textContent = formatarDataComentario(comentario.data);
+            data.textContent = formatarDataComentario(comentarioNormalizado.data);
             cabecalho.appendChild(data);
 
             const texto = document.createElement("p");
-            texto.textContent = comentario.mensagem || "";
+            texto.textContent = comentarioNormalizado.mensagem || "";
 
             conteudo.appendChild(cabecalho);
             conteudo.appendChild(texto);
             item.appendChild(conteudo);
             lista.appendChild(item);
         });
+}
+
+function normalizarComentarioApresentacao(comentario) {
+    const nome = comentario.nome === "Portfolio Didatica"
+        ? "Portfólio Didática"
+        : comentario.nome;
+    const mensagem =
+        comentario.mensagem === "Mural pronto para a apresentacao. Deixe seu comentario sobre a aula!"
+            ? "Mural pronto para a apresentação. Deixe seu comentário sobre a aula!"
+            : comentario.mensagem;
+
+    return {
+        ...comentario,
+        nome,
+        mensagem
+    };
 }
 
 function formatarDataComentario(dataIso) {

@@ -80,7 +80,7 @@
                         <div class="aula-status-grid" aria-label="Estado do projeto">
                             <span class="aula-status aula-status-ok">
                                 <strong>Aula 1</strong>
-                                <small>em produção</small>
+                                <small>pronta para explorar</small>
                             </span>
                             <span class="aula-status aula-status-destaque">
                                 <strong>Podcast</strong>
@@ -88,7 +88,7 @@
                             </span>
                             <span class="aula-status aula-status-destaque">
                                 <strong>Novas aulas</strong>
-                                <small>botão +</small>
+                                <small>em breve</small>
                             </span>
                         </div>
                     </aside>
@@ -271,15 +271,14 @@
                         <button type="button" class="btn-destaque" onclick="abrirDossieCompleto()">
                             Saber mais
                         </button>
-                        <button id="btn-videos-aula" type="button" class="btn-secundario" onclick="abrirVideosAula()" hidden>
-                            Ver vídeos da aula
+                        <button id="btn-podcast-aula" type="button" class="btn-secundario" onclick="abrirPodcastDaAula()" hidden>
+                            Ouvir podcast
                         </button>
                     </div>
 
                     <p id="texto-ajuda-interacao" class="texto-ajuda">
-                        Passe o mouse sobre os símbolos de <strong>+</strong> para ver um resumo
-                        rápido. Clique em qualquer ponto interativo ou no botão "Saber mais" para
-                        abrir a leitura completa da aula.
+                        No computador, passe o mouse sobre os símbolos de <strong>+</strong>;
+                        no celular, toque nos pontos interativos para ver os resumos.
                     </p>
                 </aside>
             </div>
@@ -296,7 +295,7 @@
             <div class="dossie-hero">
                 <div class="dossie-hero-copy">
                     <span id="dossie-kicker" class="dossie-kicker">Leitura em formato de matéria</span>
-                    <h1 id="dossie-titulo">Título da matéria</h1>
+                    <h1 id="dossie-titulo">Inteligência Artificial e Didática</h1>
                     <p id="dossie-resumo" class="texto-base dossie-resumo-principal"></p>
                     <div id="dossie-meta" class="dossie-meta"></div>
                 </div>
@@ -331,8 +330,8 @@
     </main>
 
     <div id="tooltip-card" class="tooltip-card" hidden>
-        <span class="tooltip-tag" id="tooltip-tag">Ponto de estudo</span>
-        <h3 id="tooltip-titulo">Título</h3>
+        <span class="tooltip-tag" id="tooltip-tag">Ponto da imagem</span>
+        <h3 id="tooltip-titulo">Resumo interativo</h3>
         <p id="tooltip-texto"></p>
         <button id="tooltip-botao" type="button" class="btn-tooltip">Saber mais</button>
     </div>
@@ -348,7 +347,7 @@
             ×
         </button>
         <span id="mobile-sheet-tag" class="tooltip-tag">Ponto da imagem</span>
-        <h3 id="mobile-sheet-titulo">Título</h3>
+        <h3 id="mobile-sheet-titulo">Resumo interativo</h3>
         <p id="mobile-sheet-texto"></p>
         <button id="mobile-sheet-botao" type="button" class="btn-destaque">Saber mais</button>
     </aside>

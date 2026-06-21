@@ -20,7 +20,7 @@ function doGet(e) {
   } catch (erro) {
     return responder(callback, {
       ok: false,
-      erro: erro.message || "Erro ao processar comentario."
+      erro: erro.message || "Erro ao processar comentário."
     });
   }
 }
@@ -43,7 +43,7 @@ function salvarComentario(sheet, params) {
   const mensagem = limparTexto(params.mensagem, 420);
 
   if (!nome || !mensagem) {
-    throw new Error("Nome e mensagem sao obrigatorios.");
+    throw new Error("Nome e mensagem são obrigatórios.");
   }
 
   const data = new Date();
@@ -80,8 +80,8 @@ function limparMuralParaApresentacao() {
   sheet.appendRow([
     data.toISOString(),
     "1",
-    "Portfolio Didatica",
-    "Mural pronto para a apresentacao. Deixe seu comentario sobre a aula!"
+    "Portfólio Didática",
+    "Mural pronto para a apresentação. Deixe seu comentário sobre a aula!"
   ]);
 }
 

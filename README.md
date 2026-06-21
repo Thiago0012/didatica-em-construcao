@@ -1,32 +1,32 @@
-# Didatica em construcao
+# Didática em construção
 
-Site academico interativo desenvolvido para a disciplina de Didatica.
+Site acadêmico interativo desenvolvido para a disciplina de Didática.
 
-O projeto apresenta uma materia sobre Inteligencia Artificial na sala de aula, com imagem interativa, pontos explicativos, podcast do grupo e mural de comentarios da turma.
+O projeto apresenta uma matéria sobre Inteligência Artificial na sala de aula, com imagem interativa, pontos explicativos, podcast do grupo e mural de comentários da turma.
 
-## Comentarios
+## Comentários
 
-O mural de comentarios funciona em modo local quando `comentarios-config.js` esta sem endpoint.
+O mural de comentários funciona em modo local quando `comentarios-config.js` está sem endpoint.
 
-Para comentarios compartilhados:
+Para comentários compartilhados:
 
 1. Crie uma planilha no Google Sheets.
-2. Abra Extensoes > Apps Script.
-3. Cole o conteudo de `comentarios-apps-script.gs`.
-4. Implante como aplicativo da Web, executando como voce e permitindo acesso para qualquer pessoa.
+2. Abra Extensões > Apps Script.
+3. Cole o conteúdo de `comentarios-apps-script.gs`.
+4. Implante como aplicativo da Web, executando como você e permitindo acesso para qualquer pessoa.
 5. Copie a URL do aplicativo da Web.
 6. Cole essa URL em `comentarios-config.js`.
 
-## Limpar o mural antes da apresentacao
+## Limpar o mural antes da apresentação
 
-Para deixar o mural limpo, mas com um comentario de teste:
+Para deixar o mural limpo, mas com um comentário de teste:
 
-1. Abra a planilha usada pelos comentarios.
-2. Va em Extensoes > Apps Script.
-3. Atualize o codigo com a versao mais recente de `comentarios-apps-script.gs`.
-4. No seletor de funcoes, escolha `limparMuralParaApresentacao`.
+1. Abra a planilha usada pelos comentários.
+2. Vá em Extensões > Apps Script.
+3. Atualize o código com a versão mais recente de `comentarios-apps-script.gs`.
+4. No seletor de funções, escolha `limparMuralParaApresentacao`.
 5. Clique em Executar.
 
-Para apagar todos os comentarios sem deixar comentario de teste, execute a funcao `limparMuralCompleto`.
+Para apagar todos os comentários sem deixar comentário de teste, execute a função `limparMuralCompleto`.
 
-Essas funcoes nao ficam expostas no site. Elas so podem ser executadas dentro do Apps Script, evitando que alguem da turma apague o mural sem querer.
+Essas funções não ficam expostas no site. Elas só podem ser executadas dentro do Apps Script, evitando que alguém da turma apague o mural sem querer.
